@@ -39,10 +39,11 @@ sealed trait Compressor {
 
 case class CssCompressor(breakCol: Int = 0, charset: Charset = IO.defaultCharset) extends Compressor {
 
-  def compress(in: File, out: File, log: Logger) =
+  def compress(in: File, out: File, log: Logger) {
     compressWith(in, out, log, charset) {
       new YuiCssCompressor(_).compress(_, breakCol)
     }
+  }
 
 }
 
@@ -54,10 +55,11 @@ case class JsCompressor(
     noOptimize: Boolean = false,
     charset: Charset = IO.defaultCharset) extends Compressor {
 
-  def compress(in: File, out: File, log: Logger) =
+  def compress(in: File, out: File, log: Logger) {
     compressWith(in, out, log, charset) {
       new YuiJsCompressor(_, new JsErrorReporter(log)).compress(_, breakCol, munge, verbose, keepSemi, noOptimize)
     }
+  }
 
   private[this] class JsErrorReporter(val log: Logger) extends ErrorReporter {
 

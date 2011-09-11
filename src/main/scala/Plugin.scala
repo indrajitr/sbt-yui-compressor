@@ -36,9 +36,9 @@ object YuiCompressorPlugin extends Plugin {
   lazy val cssCompressorOptions = SettingKey[Seq[String]]("css-compressor-options", "Options for CSS compressor.")
   lazy val jsCompressorOptions = SettingKey[Seq[String]]("js-compressor-options", "Options for JS compressor.")
 
-  val cssResourceManaged = SettingKey[File]("yui-resource-managed", "Default managed resource directory, used when generating CSS resources.")
+  // val cssResourceManaged = SettingKey[File]("yui-resource-managed", "Default managed resource directory, used when generating CSS resources.")
 
-  lazy val cssResourceDirectories = SettingKey[Seq[File]]("css-resource-directories", "CSS resource directories, containing resources manually created by the user.")
+  // lazy val cssResourceDirectories = SettingKey[Seq[File]]("css-resource-directories", "CSS resource directories, containing resources manually created by the user.")
   // lazy val jsResourceDirectories = SettingKey[Seq[File]]("js-resource-directories", "JS resource directories, containing resources manually created by the user.")
   lazy val cssResources = TaskKey[Seq[File]]("css-resources", "CSS resources, which are manually created.")
 
@@ -61,22 +61,20 @@ object YuiCompressorPlugin extends Plugin {
     }
   }
 
+
   def yuiCompressorSettings: Seq[Setting[_]] =
     inConfig(YuiCssCompressor)(Seq(
-
+  
       yuiCompressorOptions := Nil, // Seq("--charset", "UTF-8"), //--type <js|css> --charset <charset> --line-break <column> --verbose
       cssCompressorOptions <<= yuiCompressorOptions,
-      // TODO: Consider removing these keys which are very unlikely to be configured individually
-      // e.g., instead of `cssResourceManaged in Compile`, one can always configure `resourceManaged in YuiCssCompressor in Compile`
-      cssResourceManaged in Compile <<= (cssResourceManaged in Compile) or (resourceManaged in Compile),
-      cssResourceDirectories in Compile <<= (cssResourceDirectories in Compile) or (unmanagedResourceDirectories in Compile),
       includeFilter in cssResources := "*.css",
-      excludeFilter in cssResources <<= (excludeFilter in cssResources) or (excludeFilter in unmanagedResources),
-      cssResources in Compile <<= Defaults.collectFiles(cssResourceDirectories in Compile, includeFilter in cssResources, excludeFilter in cssResources),
-      cssCompressor in Compile <<= (cssResources in Compile, cssResourceManaged in Compile, cssResourceDirectories in Compile, streams) map cssCompressorTask)) ++
+      excludeFilter in cssResources <<= excludeFilter in unmanagedResources,
+      cssResources in Compile <<= Defaults.collectFiles(unmanagedResourceDirectories in Compile, includeFilter in cssResources, excludeFilter in cssResources),
+      cssCompressor in Compile <<= (cssResources in Compile, resourceManaged in Compile, unmanagedResourceDirectories in Compile, streams) map cssCompressorTask)) ++
     Seq(
       watchSources in Defaults.ConfigGlobal <++= cssResources in YuiCssCompressor in Compile,
       resourceGenerators in Compile <+= cssCompressor in YuiCssCompressor in Compile
     )
+
 
 }
