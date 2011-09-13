@@ -23,6 +23,9 @@ import org.mozilla.javascript.EvaluatorException
 import com.yahoo.platform.yui.compressor.{CssCompressor => YuiCssCompressor}
 import com.yahoo.platform.yui.compressor.{JavaScriptCompressor => YuiJsCompressor}
 import sbt._
+import Cache.{hConsCache, hNilCache}
+import Tracked.{inputChanged, outputChanged}
+import FileInfo.{exists, lastModified}
 
 
 sealed trait Compressor {
@@ -35,6 +38,25 @@ sealed trait Compressor {
         f(rin, wout)
       }
     }
+
+  def cached(cache: File, source: File, output: File, log: Logger) {
+    type Inputs = ModifiedFileInfo :+: HNil
+    val inputs: Inputs = lastModified(source) :+: HNil
+
+    val flatPath: File => String = _.absolutePath.replaceAll(File.separator, "_")
+
+    val cachedCompress = inputChanged(cache / ("input-" + flatPath(source))) { (inChanged, in: Inputs) =>
+      outputChanged(cache / ("output-" + flatPath(output))) { (outChanged, out: PlainFileInfo) =>
+        if(inChanged || outChanged)
+          compress(source, out.file, log)
+        else
+          log.debug("Minified file uptodate: " + out.file)
+      }
+    }
+
+    cachedCompress(inputs)(() => exists(output))
+  }
+
 }
 
 case class CssCompressor(breakCol: Int = 0, charset: Charset = IO.defaultCharset) extends Compressor {
@@ -81,5 +103,25 @@ case class JsCompressor(
       else log.log(l, "%s at %d [%d:%d] %s".format(sourceName, lineSource, line, lineOffset, message))
     }
   }
+
+}
+
+object Compress {
+
+  def apply(cacheDir: File, c: Compressor, mappings: Seq[(File, File)], log: Logger): Seq[File] =
+    util.control.Exception.catching(classOf[IOException]) either {
+      mappings map { pair =>
+        val (src, dest) = pair
+        // c.compress(src, dest, log)
+        c.cached(cacheDir / dest.ext, src, dest, log)
+        log.debug("Minified resource: %s to %s".format(src, dest))
+        dest
+      }
+    } match {
+      case Right(outList) => outList
+      case Left(e)        =>
+        log.warn("Failed during minification [%s]".format(e))
+        Nil
+    }
 
 }
