@@ -1,6 +1,6 @@
 sbtPlugin := true
 
-organization := "net.liftweb.sbt"
+organization := "org.scala_tools.sbt"
 
 name := "sbt-yui-compressor"
 
