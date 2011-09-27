@@ -32,8 +32,8 @@ object Plugin extends sbt.Plugin {
   object YuiCompressorKeys {
     lazy val yuiMinSuffix        = SettingKey[String]("yui-min-suffix", "Suffix of the base of the minified files.")
     lazy val yuiBreakColumn      = SettingKey[Int]("yui-break-column", "Line break column.")
-    lazy val yuiVerbose          = SettingKey[Boolean]("yui-verbose", "Enable yuiVerbose messages.")
-    lazy val yuiMunge            = SettingKey[Boolean]("yui-munge", "Obfuscate local symbols, in addition to minifying (for JavaScript resources only).")
+    lazy val yuiVerbose          = SettingKey[Boolean]("yui-verbose", "Enable verbose messages.")
+    lazy val yuiMunge            = SettingKey[Boolean]("yui-munge", "Obfuscate local symbols in addition to minifying (for JavaScript resources only).")
     lazy val yuiOptimize         = SettingKey[Boolean]("yui-optimize", "Enable micro-optimization (for JavaScript resources only).")
     lazy val yuiPreserveSemi     = SettingKey[Boolean]("yui-preserve-semi", "Preserve unnecessary semicolons (for JavaScript resources only).")
     lazy val yuiJsCompressorOpts = SettingKey[(Boolean, Boolean, Boolean)]("yui-js-compressor-opts", "JavaScript compressor specific options (munge, optimize, preserveSemi).")
