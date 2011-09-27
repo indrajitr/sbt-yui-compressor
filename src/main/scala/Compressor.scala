@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.scala_tools.sbt
+package org.scala_tools.sbt.yuiCompressor
 
 import java.io.{File, Reader, Writer, IOException}
 import java.nio.charset.Charset
@@ -71,15 +71,15 @@ case class CssCompressor(breakCol: Int = 0, charset: Charset = IO.defaultCharset
 
 case class JsCompressor(
     breakCol: Int = 0,
-    munge: Boolean = false,
     verbose: Boolean = false,
-    keepSemi: Boolean = false,
-    noOptimize: Boolean = false,
+    munge: Boolean = false,
+    optimize: Boolean = true,
+    preserveSemi: Boolean = false,
     charset: Charset = IO.defaultCharset) extends Compressor {
 
   def compress(in: File, out: File, log: Logger) {
     compressWith(in, out, log, charset) {
-      new YuiJsCompressor(_, new JsErrorReporter(log)).compress(_, breakCol, munge, verbose, keepSemi, noOptimize)
+      new YuiJsCompressor(_, new JsErrorReporter(log)).compress(_, breakCol, munge, verbose, preserveSemi, !optimize)
     }
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.scala_tools.sbt
+package org.scala_tools.sbt.yuiCompressor
 
 import java.io.File
 import sbt._
@@ -26,20 +26,19 @@ import Keys._
   *
   * @author Indrajit Raychaudhuri
   */
-object YuiCompressorPlugin extends Plugin {
+object Plugin extends sbt.Plugin {
+  import YuiCompressorKeys._
 
-  lazy val YuiCompressor = config("yui-compressor") hide
-
-  lazy val yuiCompressorOptions = SettingKey[Seq[String]]("yui-compressor-options", "Common options for both CSS and JavaScript compressors.")
-  lazy val cssCompressorOptions = SettingKey[Seq[String]]("css-compressor-options", "Options for CSS compressor.")
-  lazy val jsCompressorOptions  = SettingKey[Seq[String]]("js-compressor-options", "Options for JavaScript compressor.")
-
-  lazy val yuiCompressorMinSuffix = SettingKey[String]("yui-compressor-min-suffix", "Suffix of the base of the minified files.")
-
-  lazy val cssResources  = TaskKey[Seq[File]]("css-resources", "CSS resources, which are manually created.")
-  lazy val jsResources   = TaskKey[Seq[File]]("js-resources", "JavaScript resources, which are manually created.")
-  lazy val cssCompressor = TaskKey[Seq[File]]("css-compressor", "CSS compressor task.")
-  lazy val jsCompressor  = TaskKey[Seq[File]]("js-compressor", "JavaScript compressor task.")
+  object YuiCompressorKeys {
+    lazy val minSuffix        = SettingKey[String]("yui-min-suffix", "Suffix of the base of the minified files.")
+    lazy val breakColumn      = SettingKey[Int]("yui-break-column", "Line break column.")
+    lazy val verbose          = SettingKey[Boolean]("yui-verbose", "Enable verbose messages.")
+    lazy val jsCompressorOpts = SettingKey[(Boolean, Boolean, Boolean)]("yui-js-compressor-opts", "JavaScript compressor specific options (munge, optimize, preserveSemi).")
+    lazy val cssResources   = TaskKey[Seq[File]]("yui-css-resources", "CSS resources, which are manually created.")
+    lazy val cssCompressor = TaskKey[Seq[File]]("yui-css-compressor", "CSS compressor task.")
+    lazy val jsResources   = TaskKey[Seq[File]]("yui-js-resources", "JavaScript resources, which are manually created.")
+    lazy val jsCompressor  = TaskKey[Seq[File]]("yui-js-compressor", "JavaScript compressor task.")
+  }
 
   def compressorTask(compressor: Compressor)(cacheDir: File, in: Seq[File], outdir: File, dirs: Seq[File], suffix: String, log: Logger) = {
     val mappings = (in --- dirs) x (rebase(dirs, outdir) | flat(outdir)) map { pair => (pair._1, appendSuffix(pair._2, suffix)) }
@@ -49,35 +48,32 @@ object YuiCompressorPlugin extends Plugin {
   private def appendSuffix(file: File, suffix: String): File =
     file.getParentFile / (file.base + suffix + "." + file.ext)
 
-  // def cssCompressorTask = compressorTask(CssCompressor(0, charset = IO.defaultCharset)) _
-  // def jsCompressorTask = compressorTask(JsCompressor(0, verbose = logLevel < Level.Info, charset = IO.defaultCharset)) _
+  def cssCompressorTask(cacheDir: File, in: Seq[File], outdir: File, dirs: Seq[File], suffix: String, breakCol: Int, verbose: Boolean, s: TaskStreams) =
+    compressorTask(CssCompressor(breakCol/*, verbose*/))(cacheDir, in, outdir, dirs, suffix, s.log)
 
-  def cssCompressorTask(cacheDir: File, in: Seq[File], outdir: File, dirs: Seq[File], suffix: String, logLevel: Level.Value, s: TaskStreams) =
-    compressorTask(CssCompressor(0, charset = IO.defaultCharset))(cacheDir, in, outdir, dirs, suffix, s.log)
+  def jsCompressorTask(cacheDir: File, in: Seq[File], outdir: File, dirs: Seq[File], suffix: String, breakCol: Int, verbose:Boolean, jsCompOpts: (Boolean, Boolean, Boolean), s: TaskStreams) =
+    compressorTask(JsCompressor(breakCol, verbose, jsCompOpts._1, jsCompOpts._2, jsCompOpts._3))(cacheDir, in, outdir, dirs, suffix, s.log)
 
-  def jsCompressorTask(cacheDir: File, in: Seq[File], outdir: File, dirs: Seq[File], suffix: String, logLevel: Level.Value, s: TaskStreams) =
-    compressorTask(JsCompressor(0, verbose = logLevel < Level.Info, charset = IO.defaultCharset))(cacheDir, in, outdir, dirs, suffix, s.log)
+  def baseYuiCompressorSettings: Seq[Setting[_]] =
+    Seq(
+      minSuffix   := "-min",
+      breakColumn := 0,
+      verbose     := false,
 
-  def yuiCompressorConfigs: Seq[Setting[_]] =
-    inConfig(YuiCompressor)(Seq(
-
-      yuiCompressorOptions   := Nil, // Seq("--charset", "UTF-8"), //--type <js|css> --charset <charset> --line-break <column> --verbose
-      yuiCompressorMinSuffix := "-min",
-      logLevel              <<=  logLevel ?? Level.Info,
-
-      cssCompressorOptions          <<= yuiCompressorOptions,
       includeFilter in cssResources  := "*.css",
       excludeFilter in cssResources <<= excludeFilter in unmanagedResources,
 
-      jsCompressorOptions          <<= yuiCompressorOptions,
-      includeFilter in jsResources  := "*.js",
-      excludeFilter in jsResources <<= excludeFilter in unmanagedResources)) ++
-    Seq(
-      cssResources  <<= Defaults.collectFiles(unmanagedResourceDirectories, includeFilter in YuiCompressor in cssResources, excludeFilter in YuiCompressor in cssResources),
-      cssCompressor <<= (cacheDirectory, cssResources, resourceManaged, unmanagedResourceDirectories, yuiCompressorMinSuffix in YuiCompressor, logLevel in YuiCompressor, streams) map cssCompressorTask,
+      includeFilter in jsResources     := "*.js",
+      excludeFilter in jsResources    <<= excludeFilter in unmanagedResources,
+      jsCompressorOpts in jsCompressor := (true, true, false))
 
-      jsResources   <<= Defaults.collectFiles(unmanagedResourceDirectories, includeFilter in YuiCompressor in jsResources, excludeFilter in YuiCompressor in jsResources),
-      jsCompressor  <<= (cacheDirectory, jsResources, resourceManaged, unmanagedResourceDirectories, yuiCompressorMinSuffix in YuiCompressor, logLevel in YuiCompressor, streams) map jsCompressorTask,
+  def yuiCompressorConfigs: Seq[Setting[_]] =
+    baseYuiCompressorSettings ++ Seq(
+      cssResources  <<= Defaults.collectFiles(unmanagedResourceDirectories, includeFilter in cssResources, excludeFilter in cssResources),
+      cssCompressor <<= (cacheDirectory, cssResources, resourceManaged, unmanagedResourceDirectories, minSuffix in cssCompressor, breakColumn in cssCompressor, verbose in cssCompressor, streams) map cssCompressorTask,
+
+      jsResources   <<= Defaults.collectFiles(unmanagedResourceDirectories, includeFilter in jsResources, excludeFilter in jsResources),
+      jsCompressor  <<= (cacheDirectory, jsResources, resourceManaged, unmanagedResourceDirectories, minSuffix in jsCompressor, breakColumn in jsCompressor, verbose in jsCompressor, jsCompressorOpts in jsCompressor, streams) map jsCompressorTask,
 
       watchSources in Defaults.ConfigGlobal <++= (cssResources, jsResources) map(_ ++ _),
       resourceGenerators                    <++= (cssCompressor, jsCompressor)(_ :: _ :: Nil))

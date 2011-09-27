@@ -2,9 +2,9 @@ sbtPlugin := true
 
 organization := "net.liftweb.sbt"
 
-name := "sbt-yui-compressor-plugin"
+name := "sbt-yui-compressor"
 
-version := "0.0.1-SNAPSHOT"
+version := "0.1-SNAPSHOT"
 
 licenses += ("Apache License, Version 2.0", url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
