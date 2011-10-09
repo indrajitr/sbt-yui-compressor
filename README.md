@@ -13,12 +13,12 @@ Add the following to your plugin definition list in `project/plugin.sbt` (per pr
 Alternately, add sbt-yui-compressor's git repository url as dependency in `project/plugins/project/build.scala`:
 
 ```scala
-    import sbt._
+import sbt._
 
-    object PluginDef extends Build {
-      lazy val root = Project("plugins", file(".")) dependsOn(
-        uri("git://github.com/indrajitr/sbt-yui-compressor")
-    }
+object PluginDef extends Build {
+  lazy val root = Project("plugins", file(".")) dependsOn(
+    uri("git://github.com/indrajitr/sbt-yui-compressor")
+}
 ```
 
 
@@ -35,37 +35,28 @@ By default, this would minify the CSS and JavaScripts under `unmanagedResources`
 
 ## Settings and Tasks
 
-* `yui-min-suffix`
-  Suffix of the base of the minified files, defaults to `"-min"`.
+* `yui-min-suffix`: Suffix of the base of the minified files, defaults to `"-min"`.
 
-* `yui-break-column`
-  Line break column, defaults to `0`.
+* `yui-break-column`: Line break column, defaults to `0`.
 
-* `yui-verbose`
-  Enable verbose messages, defaults to `false`.
+* `yui-verbose`: Enable verbose messages, defaults to `false`.
 
-* `yui-munge`
-  Obfuscate local symbols in addition to minifying, default to `true` (for JavaScript resources only).
+* `yui-munge`: Obfuscate local symbols in addition to minifying, default to `true` (for JavaScript resources only).
 
-* `yui-optimize`
-  Enable micro-optimization, defaults to `true` (for JavaScript resources only).
+* `yui-optimize`: Enable micro-optimization, defaults to `true` (for JavaScript resources only).
 
-* `yui-preserve-semi`
-  Preserve unnecessary semicolons, defaults to `false` (for JavaScript resources only).
+* `yui-preserve-semi`: Preserve unnecessary semicolons, defaults to `false` (for JavaScript resources only).
 
-* `include-filter`
-  Filter for files to to be considered for compression (`".css"` for CssCompressor, `"*.js"` for JsCompressor).
+* `include-filter`: Filter for files to to be considered for compression (`".css"` for CssCompressor, `"*.js"` for JsCompressor).
 
-* `yui-css-compressor`
-  CSS compressor task.
+* `yui-css-compressor`: CSS compressor task.
 
-* `yui-js-compressor`
-  JavaScript compressor task.
+* `yui-js-compressor`: JavaScript compressor task.
 
 
 ## License
 
-This software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+This software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ## Credits
 
