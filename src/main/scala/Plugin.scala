@@ -21,7 +21,7 @@ import Keys._
 
 
 /**
-  * CSS and Javascript compressor for SBT using YUI Compressor.
+  * CSS and JavaScript compressor for SBT using YUI Compressor.
   *
   * @author Indrajit Raychaudhuri
   */
@@ -38,8 +38,8 @@ object Plugin extends sbt.Plugin {
 
   private val yui = YuiCompressorKeys
 
-  private def compressorTask(resources: TaskKey[Seq[File]], task: TaskKey[Seq[File]]) =
-    (cacheDirectory in task, resources, resourceManaged in task, unmanagedResourceDirectories in task, yui.minSuffix in task, state in task, runner in task, yui.options in task, streams) map {
+  private def compressorTask(resources: TaskKey[Seq[File]], resourceDirs: SettingKey[Seq[File]], task: TaskKey[Seq[File]]) =
+    (cacheDirectory in task, resources, resourceManaged in task, resourceDirs, yui.minSuffix in task, state in task, runner in task, yui.options in task, streams) map {
       (cache, in, outdir, dirs, suf, state, runner, opts, s) => compressorTask0(cache, in, outdir, dirs, suf, state, runner, opts, s.log)
     }
 
@@ -54,19 +54,21 @@ object Plugin extends sbt.Plugin {
 
   private def generatorConfigCommon(key: TaskKey[Seq[File]]) =
     inTask(key)(Seq(
-      cacheDirectory ~= (_ / key.key.label),
+      cacheDirectory ~= { _ / ("for_" + key.key.label) }, // TODO: use Defaults.perTaskCache when 0.11.x support is discontinued
       Defaults.runnerTask))
 
   lazy val yuiBaseSettings: Seq[Setting[_]] =
     Seq(
       yui.minSuffix := "-min",
       yui.options   := Nil,
-      // fork := true,
-      trapExit := true,
-      includeFilter in yui.cssResources  := "*.css",
+      // fork          := true,
+      trapExit      := true,
+      includeFilter in yui.cssResources := "*.css",
+      includeFilter in yui.jsResources  := "*.js",
       excludeFilter in yui.cssResources <<= excludeFilter in unmanagedResources,
-      includeFilter in yui.jsResources   := "*.js",
-      excludeFilter in yui.jsResources  <<= excludeFilter in unmanagedResources)
+      excludeFilter in yui.jsResources  <<= excludeFilter in unmanagedResources,
+      unmanagedResourceDirectories in yui.cssResources <<= unmanagedResourceDirectories,
+      unmanagedResourceDirectories in yui.jsResources  <<= unmanagedResourceDirectories)
 
   lazy val yuiResourceConfig: Seq[Setting[_]] =
     Seq(
@@ -78,10 +80,9 @@ object Plugin extends sbt.Plugin {
     generatorConfigCommon(yui.cssCompressor) ++
     generatorConfigCommon(yui.jsCompressor) ++
     Seq(
-      yui.cssCompressor <<= compressorTask(yui.cssResources, yui.cssCompressor),
-      yui.jsCompressor <<= compressorTask(yui.jsResources, yui.jsCompressor),
-      resourceGenerators <++= (yui.cssCompressor, yui.jsCompressor)(_ :: _ :: Nil)
-    )
+      yui.cssCompressor   <<= compressorTask(yui.cssResources, unmanagedResourceDirectories in yui.cssResources, yui.cssCompressor),
+      yui.jsCompressor    <<= compressorTask(yui.jsResources, unmanagedResourceDirectories in yui.jsResources, yui.jsCompressor),
+      resourceGenerators <++= (yui.cssCompressor, yui.jsCompressor)(_ :: _ :: Nil))
 
   lazy val yuiCompressorConfigs: Seq[Setting[_]] = yuiBaseSettings ++ yuiResourceConfig ++ yuiGeneratorConfig
 
