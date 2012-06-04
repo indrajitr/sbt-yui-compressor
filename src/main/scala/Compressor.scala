@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package in.drajit.sbt.yuiCompressor
+package yuiCompressor
 
 import sbt._
 import Cache.{hConsCache, hNilCache}

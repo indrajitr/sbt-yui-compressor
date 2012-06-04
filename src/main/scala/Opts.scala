@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package in.drajit.sbt.yuiCompressor
+package yuiCompressor
 
 /**
   * Convenient helper for YUI Compressor options.
