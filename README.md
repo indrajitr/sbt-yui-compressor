@@ -18,7 +18,7 @@ resolvers += Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifa
 addSbtPlugin("in.drajit.sbt" % "sbt-yui-compressor" % "0.2")
 ```
 
-Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's git repository url as dependency in `project/plugins/project/build.scala`:
+Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's GitHub repository url as dependency in `project/plugins/project/build.scala`:
 
 ```scala
 import sbt._
@@ -42,7 +42,7 @@ Alternately, if you are using the full build definition (`project/build.scala`),
 import sbt._
 
 object BuildDef extends Build {
-  lazy val myproject = Project("myproject", file(".")) settings(in.drajit.sbt.yuiCompressor.Plugin.yuiSettings: _*)
+  lazy val myproject = Project("myproject", file(".")) settings(yuiCompressor.Plugin.yuiSettings: _*)
 }
 ```
 
@@ -58,19 +58,19 @@ By default, this would minify the CSS and JavaScripts available under `unmanaged
 
         ```scala
         // Use suffix "-minified"
-        `YuiCompressorKeys.minSuffix := "-minified"`
+        YuiCompressorKeys.minSuffix := "-minified"
         ```
 
-* `yui-options`: Options passed to YUI Compressor as sequence of `Strings`. This is follows the convention of setting up `scalacOptions` in SBT. See [YUI Compressor documentation](https://github.com/yui/yuicompressor/blob/master/doc/README) for the full set of options available.
+* `yui-options`: Options passed to YUI Compressor as sequence of `Strings`. This is follows the convention of setting up `scalacOptions` in SBT. See [YUI Compressor documentation](https://github.com/yui/yuicompressor/blob/master/doc/README) for the full set of options available. The relevant options are conveniently available wrapped in `yuiCompressor.Opts` (see `src/main/scala/Opts.scala`).
     * Default value: `Nil`
     * Alternatives:
 
         ```scala
         // Insert a line break after column number 100 (for both CSS and JS files)
-        YuiCompressorKeys.options ++= Seq("--line-break", 100)`
+        YuiCompressorKeys.options ++= yuiCompressor.Opts.lineBreak(100)
 
         // Do not obfuscate JS files, just minify them
-        YuiCompressorKeys.options in YuiCompressorKeys.jsCompressor += "--nomunge"`
+        YuiCompressorKeys.options in YuiCompressorKeys.jsCompressor += yuiCompressor.Opts.js.nomunge
         ```
 
 * `include-filter`: Filter for files to to be considered for compression.
