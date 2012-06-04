@@ -1,10 +1,10 @@
 sbtPlugin := true
 
-organization := "org.scala_tools.sbt"
+organization := "in.drajit.sbt"
 
 name := "sbt-yui-compressor"
 
-version := "0.1-SNAPSHOT"
+version := "0.2-SNAPSHOT"
 
 licenses += ("Apache License, Version 2.0", url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
@@ -16,8 +16,9 @@ publishArtifact in (Compile, packageDoc) := false
 
 publishArtifact in (Compile, packageSrc) := false
 
-publishTo <<= (version) { version =>
-  val snapshot = "Nexus Repository for Snapshots" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
-  val release  = "Nexus Repository for Releases"  at "http://nexus.scala-tools.org/content/repositories/releases/"
-  if (version endsWith "-SNAPSHOT") Some(snapshot) else Some(release)
+publishTo <<= (isSnapshot) { isSnapshot =>
+  val (namePrefix, repoBase) = ("sbt-plugin-", "http://scalasbt.artifactoryonline.com/scalasbt/")
+  val (name, repo) = if (isSnapshot) (namePrefix + "snapshots", repoBase + namePrefix + "snapshot")
+                     else            (namePrefix + "releases", repoBase + namePrefix + "releases")
+  Some(Resolver.url(name, url(repo))(Resolver.ivyStylePatterns))
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Indrajit Raychaudhuri
+ * Copyright 2011-2012 Indrajit Raychaudhuri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.scala_tools.sbt.yuiCompressor
+package in.drajit.sbt.yuiCompressor
 
 import sbt._
 import Cache.{hConsCache, hNilCache}
