@@ -1,0 +1,34 @@
+# We disable cross-paths for the purpose of testing since `exists` cannot
+# have parameterized argument. That is, we cannot have something like:
+# exists target/{scala.version}/resource_managed/main/simple-min.js
+
+> set crossPaths := false
+> managed-resources
+
+# Simple CSS
+$ exists target/resource_managed/main/simple-min.css
+$ newer target/resource_managed/main/simple-min.css src/main/resources/simple.css
+-$ must-mirror target/resource_managed/main/simple-min.css src/main/resources/simple.css
+
+# Nested CSS
+$ exists target/resource_managed/main/nested/nested-min.css
+$ newer target/resource_managed/main/nested/nested-min.css src/main/resources/nested/nested.css
+
+# Simple JS
+$ exists target/resource_managed/main/simple-min.js
+
+# Custom filter for "*.javascript"
+# not in default includeFilter
+-$ exists target/resource_managed/main/simple-min.javascript
+# so add it to the includeFilter
+> 'set includeFilter in (Compile, YuiCompressorKeys.jsResources) := "*.js" | "*.javascript"'
+> managed-resources
+$ exists target/resource_managed/main/simple-min.javascript
+$ newer target/resource_managed/main/simple-min.javascript src/main/resources/simple.javascript
+-$ must-mirror target/resource_managed/main/simple-min.css src/main/resources/simple.css
+
+# Alernative suffix for minified files
+> clean
+> 'set YuiCompressorKeys.minSuffix := "-minified"'
+> managed-resources
+$ exists target/resource_managed/main/simple-minified.css
