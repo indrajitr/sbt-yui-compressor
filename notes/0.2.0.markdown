@@ -1,0 +1,5 @@
+Initial public release:
+
+* Supports compressing "*.css" and "*.js" files in unmanagedResourceDirectories by default
+* Binaries available in official SBT repository
+* Support for SBT 0.11.2 and newer
