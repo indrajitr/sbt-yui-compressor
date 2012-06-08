@@ -4,7 +4,7 @@ organization := "in.drajit.sbt"
 
 name := "sbt-yui-compressor"
 
-version := "0.2-SNAPSHOT"
+version := "0.2.0-SNAPSHOT"
 
 licenses += ("Apache License, Version 2.0", url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
