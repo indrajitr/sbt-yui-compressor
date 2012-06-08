@@ -1,11 +1,11 @@
 # SBT YUI Compressor Plugin
 
-sbt-yui-compressor is a [SBT](https://github.com/harrah/xsbt) plugin for [YUI Compressor](http://developer.yahoo.com/yui/compressor/) to minify CSS and JavaScript.
+sbt-yui-compressor is an [SBT][1] plugin for [YUI Compressor][2] to minify CSS and JavaScript.
 
 
 ## Pre-requisite
 
-sbt-yui-compressor requires SBT 0.11.1 or newer.
+sbt-yui-compressor requires SBT version 0.11.2 or newer.
 
 
 ## Installation
@@ -15,17 +15,17 @@ Include pre-compiled binary form of the plugin in your plugin definition list by
 ```scala
 // Add SBT plugin repository to the list of resolvers (not necessary for SBT 0.12 onwards)
 resolvers += Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns)
-addSbtPlugin("in.drajit.sbt" % "sbt-yui-compressor" % "0.2")
+addSbtPlugin("in.drajit.sbt" % "sbt-yui-compressor" % "0.2.0")
 ```
 
-Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's GitHub repository url as dependency in `project/plugins/project/build.scala`:
+Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's GitHub repository url as dependency in `project/project/build.scala`:
 
 ```scala
 import sbt._
 
 object PluginDef extends Build {
   lazy val root = Project("plugins", file(".")) dependsOn(yuiPlugin)
-  lazy val yuiPlugin = uri("git://github.com/sbt/sbt-yui-compressor")
+  lazy val yuiPlugin = uri("git://github.com/sbt/sbt-yui-compressor#v0.2.0")
 }
 ```
 
@@ -46,8 +46,7 @@ object BuildDef extends Build {
 }
 ```
 
-From hereon, `yuiCssCompressor` and `yuiJsCompressor` are registered with the list of `resourceGenerators`.
-By default, this would minify the CSS and JavaScripts available under `unmanagedResourceDirectories` (usually, `src/main/resources`).
+From here onwards, `yuiCssCompressor` and `yuiJsCompressor` are registered with the list of `resourceGenerators`. By default, they would minify CSS files and JavaScript files respectively available under `unmanagedResourceDirectories` (usually, `src/main/resources`).
 
 
 ## Settings and Tasks
@@ -61,7 +60,7 @@ By default, this would minify the CSS and JavaScripts available under `unmanaged
         YuiCompressorKeys.minSuffix := "-minified"
         ```
 
-* `yui-options`: Options passed to YUI Compressor as sequence of `Strings`. This is follows the convention of setting up `scalacOptions` in SBT. See [YUI Compressor documentation](https://github.com/yui/yuicompressor/blob/master/doc/README) for the full set of options available. The relevant options are conveniently available wrapped in `yuiCompressor.Opts` (see `src/main/scala/Opts.scala`).
+* `yui-options`: Options passed to YUI Compressor as sequence of `Strings`. This is follows the convention of setting up `scalacOptions` in SBT. See [YUI Compressor documentation][3] for the full set of options available. The relevant options are conveniently available wrapped in `yuiCompressor.Opts` (see `src/main/scala/Opts.scala`).
     * Default value: `Nil`
     * Alternatives:
 
@@ -78,8 +77,10 @@ By default, this would minify the CSS and JavaScripts available under `unmanaged
     * Alternatives:
 
         ```scala
-        // Consider "*.javascript" files for compression as well
-        YuiCompressorKeys.includeFilter in YuiCompressorKeys.jsResources := "*.js" | "*.javascript"
+        // Consider "*.javascript" files for compression as well in "Compile" scope
+        includeFilter in (Compile, YuiCompressorKeys.jsResources) := "*.js" | "*.javascript"
+        // Consider "*.javascript" files for compression as well in "Test" scope
+        includeFilter in (Test, YuiCompressorKeys.jsResources) := "*.js" | "*.javascript"
         ```
 
 * `exclude-filter`: Filter for files to be excluded from compression.
@@ -90,7 +91,7 @@ By default, this would minify the CSS and JavaScripts available under `unmanaged
     * Alternatives:
 
         ```scala
-        // Consider "src/main/js" in addition to "src/main/resources" directory when in "Compile" scope
+        // Consider "src/main/js" in addition to "src/main/resources" directory in "Compile" scope
         unmanagedResourceDirectories in (Compile, YuiCompressorKeys.jsResources) <+= sourceDirectory / "js"
         ```
 
@@ -110,10 +111,18 @@ By default, this would minify the CSS and JavaScripts available under `unmanaged
 
 ## License
 
-This software is distributed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt).
+This software is distributed under [Apache License, Version 2.0][6].
 
 
 ## Credits
 
-Jon Hoffman created the original SBT plugin (for 0.7) which is [still available](https://github.com/hoffrocket/sbt-yui).
-That plugin, as well as this one, are in turn influenced by [David Bernard's Maven plugin](https://github.com/davidB/yuicompressor-maven-plugin).
+Jon Hoffman created the original SBT plugin (for 0.7) which is [still available][4].
+That plugin, as well as this one, are in turn influenced by [David Bernard's Maven plugin][5].
+
+
+[1]: http://github.com/harrah/xsbt
+[2]: http://developer.yahoo.com/yui/compressor
+[3]: http://github.com/yui/yuicompressor/blob/master/doc/README
+[4]: http://github.com/hoffrocket/sbt-yui
+[5]: http://github.com/davidB/yuicompressor-maven-plugin
+[6]: http://www.apache.org/licenses/LICENSE-2.0.txt
