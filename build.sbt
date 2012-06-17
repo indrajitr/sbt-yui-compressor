@@ -18,6 +18,8 @@ publishArtifact in (Compile, packageDoc) := false
 
 publishArtifact in (Compile, packageSrc) := false
 
+publishMavenStyle := false
+
 publishTo <<= (isSnapshot) { iss =>
   val (namePrefix, repoBase) = ("sbt-plugin-", "http://scalasbt.artifactoryonline.com/scalasbt/")
   val resolver = if (iss) (namePrefix + "snapshots", repoBase + namePrefix + "snapshot")
