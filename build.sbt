@@ -22,7 +22,7 @@ publishMavenStyle := false
 
 publishTo <<= (isSnapshot) { iss =>
   val (namePrefix, repoBase) = ("sbt-plugin-", "http://scalasbt.artifactoryonline.com/scalasbt/")
-  val resolver = if (iss) (namePrefix + "snapshots", repoBase + namePrefix + "snapshot")
+  val resolver = if (iss) (namePrefix + "snapshots", repoBase + namePrefix + "snapshots")
                  else     (namePrefix + "releases", repoBase + namePrefix + "releases")
   Some(Resolver.url(resolver._1, url(resolver._2))(Resolver.ivyStylePatterns))
 }
