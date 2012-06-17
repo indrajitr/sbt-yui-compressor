@@ -14,7 +14,7 @@ Include pre-compiled binary form of the plugin in your plugin definition list by
 
 ```scala
 // Add SBT plugin repository to the list of resolvers (not necessary for SBT 0.12 onwards)
-resolvers += Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.url("sbt-plugin-releases", url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns)
 addSbtPlugin("in.drajit.sbt" % "sbt-yui-compressor" % "0.2.0")
 ```
 
@@ -46,7 +46,7 @@ object BuildDef extends Build {
 }
 ```
 
-From here onwards, `yuiCssCompressor` and `yuiJsCompressor` are registered with the list of `resourceGenerators`. By default, they would minify CSS files and JavaScript files respectively available under `unmanagedResourceDirectories` (usually, `src/main/resources`).
+From here onwards, `yuiCssCompressor` and `yuiJsCompressor` are registered with the list of `resourceGenerators`. By default, they would minify CSS files and JavaScript files respectively available under `unmanagedResourceDirectories` (usually, `src/main/resources` by default).
 
 
 ## Settings and Tasks
@@ -79,6 +79,7 @@ From here onwards, `yuiCssCompressor` and `yuiJsCompressor` are registered with 
         ```scala
         // Consider "*.javascript" files for compression as well in "Compile" scope
         includeFilter in (Compile, YuiCompressorKeys.jsResources) := "*.js" | "*.javascript"
+
         // Consider "*.javascript" files for compression as well in "Test" scope
         includeFilter in (Test, YuiCompressorKeys.jsResources) := "*.js" | "*.javascript"
         ```
@@ -100,13 +101,13 @@ From here onwards, `yuiCssCompressor` and `yuiJsCompressor` are registered with 
     * Alternatives:
 
         ```scala
-        // Keep the minified JS files in "target/scala_{scala.version}/resource_managed_js" instead when in "Test" scope
+        // Keep the minified JS files in "target/scala_{scala.version}/resource_managed_js" instead in "Test" scope
         resourceManaged in (Test, YuiCompressorKeys.jsCompressor) <<= crossTarget / "resource_managed_js"
         ```
 
-* `yui-css-compressor`: CSS compressor task.
+* `yui-css-compressor`: CSS compressor task added to `resourceGenerators` task-list.
 
-* `yui-js-compressor`: JavaScript compressor task.
+* `yui-js-compressor`: JavaScript compressor task added to `resourceGenerators` task-list.
 
 
 ## License
