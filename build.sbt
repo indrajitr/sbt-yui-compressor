@@ -4,7 +4,7 @@ organization := "in.drajit.sbt"
 
 name := "sbt-yui-compressor"
 
-version := "0.2.0-SNAPSHOT"
+version := "0.2.2-SNAPSHOT"
 
 description := "sbt-yui-compressor is an SBT plugin for YUI Compressor to minify CSS and JavaScript."
 
