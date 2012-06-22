@@ -61,8 +61,8 @@ object Plugin extends sbt.Plugin {
     Seq(
       yui.minSuffix <<= yui.minSuffix ?? "-min",
       yui.options   <<= yui.options ?? Nil,
-      // fork          := true,
-      trapExit       := true,
+      // fork           := true,
+      // trapExit       := false,
       includeFilter in yui.cssResources := "*.css",
       includeFilter in yui.jsResources  := "*.js",
       excludeFilter in yui.cssResources <<= excludeFilter in unmanagedResources,
@@ -81,7 +81,7 @@ object Plugin extends sbt.Plugin {
     generatorConfigCommon(yui.jsCompressor) ++
     Seq(
       yui.options in yui.cssCompressor ++= Seq("--type", "css"),
-      yui.options in yui.jsCompressor ++= Seq("--type", "js"),
+      yui.options in yui.jsCompressor  ++= Seq("--type", "js"),
       yui.cssCompressor   <<= compressorTask(yui.cssResources, unmanagedResourceDirectories in yui.cssResources, yui.cssCompressor),
       yui.jsCompressor    <<= compressorTask(yui.jsResources, unmanagedResourceDirectories in yui.jsResources, yui.jsCompressor),
       resourceGenerators <++= (yui.cssCompressor, yui.jsCompressor)(_ :: _ :: Nil))
