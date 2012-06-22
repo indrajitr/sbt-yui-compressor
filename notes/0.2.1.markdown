@@ -1,0 +1,4 @@
+Bug fix release:
+
+* Avoid exit trapping for YuiCompressor ScalaRun task to avoid js warnings being shown up as error in ScalaRun
+* Use SBT 0.12.0-RC2 to build 0.12 specific version

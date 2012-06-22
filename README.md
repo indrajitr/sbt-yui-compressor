@@ -18,7 +18,7 @@ resolvers += Resolver.url("sbt-plugin-releases", url("http://scalasbt.artifactor
 addSbtPlugin("in.drajit.sbt" % "sbt-yui-compressor" % "0.2.0")
 ```
 
-Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's GitHub repository url as dependency in `project/project/build.scala`:
+Alternately, include source form of the plugin in your plugin definition list by pointing to sbt-yui-compressor's GitHub repository url as dependency in `project/project/plugin.scala`:
 
 ```scala
 import sbt._
