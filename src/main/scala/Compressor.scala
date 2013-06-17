@@ -28,7 +28,7 @@ object Compressor {
 
   def compress(in: File, out: File, classpath: Seq[File], runner: ScalaRun, options: Seq[String], log: Logger) {
     IO.createDirectory(out.getParentFile)
-    runner.run(compressorMain, classpath, options ++ Seq("-o", out.absolutePath, in.absolutePath, "-Xss5120k"), log)
+    runner.run(compressorMain, classpath, options ++ Seq("-o", out.absolutePath, in.absolutePath, "-Xss8m"), log)
   }
 
   def apply(cacheDir: File, mappings: Seq[(File, File)], classpath: Seq[File], runner: ScalaRun, options: Seq[String], log: Logger): Seq[File] =
