@@ -12,7 +12,7 @@ licenses += ("Apache License, Version 2.0", url("http://www.apache.org/licenses/
 
 scalacOptions ++= DefaultOptions.scalac :+ Opts.compile.deprecation
 
-libraryDependencies += "com.yahoo.platform.yui" % "yuicompressor" % "2.4.6"
+libraryDependencies += "com.yahoo.platform.yui" % "yuicompressor" % "2.4.7"
 
 ScriptedPlugin.scriptedSettings
 
