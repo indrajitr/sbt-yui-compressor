@@ -1,5 +1,3 @@
-resolvers += Resolver.url("sbt-plugin-releases", url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns)
-
 addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.1")
 
 libraryDependencies <+= (sbtVersion) { sv =>
